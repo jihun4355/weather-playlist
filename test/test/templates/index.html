@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>날씨 기반 음악 추천</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      color: white;
+      background-size: cover;
+      background-position: center;
+    }
+    .container {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+    }
+    a {
+      color: white;
+      text-decoration: none;
+    }
+    .album-img {
+      width: 70px;
+      height: 70px;
+      vertical-align: middle;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+    .artist-name {
+      font-size: 0.9em;
+      color: white;
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body style="
+  {% if weather.lower() == 'clear' %}
+    background-image: url('/static/background_sunny.png');
+  {% elif weather.lower() == 'rain' %}
+    background-image: url('/static/background_rainy.png');
+  {% elif weather.lower() == 'clouds' %}
+    background-image: url('/static/background_clouds.png');
+  {% elif weather.lower() == 'snow' %}
+    background-image: url('/static/background_snow.png');
+  {% elif weather.lower() == 'thunderstorm' %}
+    background-image: url('/static/background_thunderstorm.png');
+  {% else %}
+    background-color: #444;
+  {% endif %}
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+">
+  <!-- 좌측 상단 시계 -->
+  <div id="clock" style="
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Noto Sans KR', 'Pretendard', 'Arial', sans-serif;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 12px;
+    z-index: 999;
+  "></div>
+
+  <div class="container">
+    <h2>{{ city }}</h2>
+
+    <img src="
+    {% if weather.lower() == 'clear' %}
+      /static/sunny.png
+    {% elif weather.lower() == 'rain' %}
+      /static/rain.png
+    {% elif weather.lower() == 'clouds' %}
+      /static/clouds.png
+    {% elif weather.lower() == 'snow' %}
+      /static/snow.png
+    {% elif weather.lower() == 'thunderstorm' %}
+      /static/thunderstorm.png
+    {% else %}
+      /static/default.jpg
+    {% endif %}
+    " width="150" height="150" alt="날씨 아이콘">
+
+    <p>현재 날씨: <strong>{{ weather }}</strong></p>
+    <p>현재 온도: <strong>{{ temp }}℃</strong></p>
+
+    <h2>🎶 오늘 날씨에 어울리는 음악</h2>
+
+      <ul>
+        {% for song in songs %}
+          <li>
+            <table border="0" cellspacing="10">
+              <tr>
+                <td>
+                  <img src="{{ song.album_img }}" alt="앨범 이미지" class="album-img" />
+                </td>
+                <td style="text-align: left;">
+                  <a href="https://www.youtube.com/results?search_query={{ (song.title + ' ' + song.artist) | urlencode }}" 
+                    target="_blank" style="margin-left: 4px; display: inline-block;">
+                    {{ song.title }}
+                  </a>
+                  <br/>
+                  <span class="artist-name">{{ song.artist }}</span>
+                </td>
+              </tr>
+            </table>
+          </li>
+        {% endfor %}
+      </ul>
+
+  </div>
+
+  <script>
+    // 시계 표시
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      const timeStr = `${hours}:${minutes}`;
+      document.getElementById("clock").textContent = timeStr;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>

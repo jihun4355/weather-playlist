@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>위치 설정 안내</title>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .notice-img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-top: 30px;
+      color: #222;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    .btn {
+      margin-top: 30px;
+      background-color: #2a6edc;
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #1e53b5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/static/location_notice.png" alt="위치 설정 안내 이미지" class="notice-img">
+
+    <button class="btn" onclick="getLocation()">위치 설정하고 시작하기</button>
+  </div>
+
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          fetch(`/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
+            .then(res => res.json())
+            .then(data => {
+              window.location.href = `/index?city=${data.city}&weather=${data.weather}&temp=${data.temp}`;
+            });
+        }, function(err) {
+          alert("위치 권한이 거부되었습니다. 브라우저 설정에서 위치 접근을 허용해주세요.");
+        });
+      } else {
+        alert("이 브라우저에서는 위치 기능을 지원하지 않습니다.");
+      }
+    }
+  </script>
+</body>
+</html>
