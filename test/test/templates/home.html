@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>날씨 기반 음악 추천</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      text-align: center;
+      padding: 40px;
+      color: rgb(255, 255, 255);
+      background-size: cover;
+      align-items: center;
+      background-position: center;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center; /* 수평 중앙 */
+      align-items: center;     /* 수직 중앙 */
+      height: 100vh;           /* 뷰포트 높이 전체 */
+      margin: 0;
+      background-color: rgb(187, 213, 235);
+    }
+    .container {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+      width: 500px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+    }
+    a {
+      color: white;
+      text-decoration: none;
+    }
+    .album-img {
+      width: 70px;
+      height: 70px;
+      vertical-align: middle;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+    .artist-name {
+      font-size: 0.9em;
+      color: white;
+      margin-left: 5px;
+    }
+
+    .btn {
+      margin-top: 30px;
+      background-color: #2a6edc00;
+      color: white;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: underline;
+    }
+
+
+  </style>
+</head>
+<body>
+  <!-- 좌측 상단 시계 -->
+  <div id="clock" style="
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Noto Sans KR', 'Pretendard', 'Arial', sans-serif;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 12px;
+    z-index: 999;
+  "></div>
+
+  <div class="container">
+  <h1>오늘의 날씨🌤️ 오늘의 노래🎶</h1>
+    <span> 현재 날씨에 어울리는 노래를 추천해드려요! </span>
+  <h3>📍현재 위치을 선택해주세요</h3>
+    <form action="/index" method="GET">
+    <label for="province" >시/도 선택:</label>
+      <select id="province" onchange="updateCities()">
+        <option value="">-- 시/도 선택 --</option>
+        <option value="서울특별시">서울특별시</option>
+        <option value="경기도">경기도</option>
+        <option value="강원특별자치도">강원특별자치도</option>
+        <option value="충청북도">충청북도</option>
+        <option value="충청남도">충청남도</option>    
+        <option value="경상북도">경상북도</option>
+        <option value="경상남도">경상남도</option>
+        <option value="전북특별자치도">전북특별자치도</option>
+        <option value="부산광역시">부산광역시</option>
+        <option value="대구광역시">대구광역시</option>
+        <option value="대전광역시">대전광역시</option>
+        <option value="인천광역시">인천광역시</option>
+        <option value="울산광역시">울산광역시</option>
+        <option value="제주특별자치도">제주특별자치도</option>
+        /
+      </select>
+
+      <br>
+      <label for="city">시/군/구 선택:</label>
+      <select id="city" name="city">
+        <option value="">-- 먼저 시/도를 선택하세요 --</option>
+      </select>
+
+      <script>
+        const regionData = {
+          "서울특별시": ["서울특별시"],
+          "부산광역시": ["부산광역시"],
+          "대구광역시": ["대구광역시"],
+          "인천광역시": ["인천광역시"],
+          "대전광역시": ["대전광역시"],
+          "광주광역시": ["광주광역시"],
+          "울산광역시": ["울산광역시"],
+          "경기도": ["고양시", "부천시", "용인시", "수원시", "화성시" ,"하남시","남양주시","오산시","파주시","평택시","안양시","군포시","광명시","일산시"],
+          "충청남도": ["보령시","부여군","공주시","논산시","예산군","천안시"],
+          "충청북도": ["충주시","청주시"],
+          "강원특별자치도": ["원주시", "속초시", "화천군", "양양군", "춘천시"],
+          "전라남도": ["화순군", "무주군", "무안군", "목포시"],
+          "전북특별자치도": ["완주군", "임실군", "진안시", "익산시"],
+          "경상남도": ["함양군", "창녕군", "양산시", "밀양시", "남해시", "김해시","창원시"],
+          "경상북도": ["구미시", "울진군", "포항시", "상주시", "김천시"],
+          "제주특별자치도": ["제주특별자치도"]
+        };
+
+        function updateCities() {
+          const provinceSelect = document.getElementById("province");
+          const citySelect = document.getElementById("city");
+          const selectedProvince = provinceSelect.value;
+
+          // 기존 옵션 제거
+          citySelect.innerHTML = "";
+
+          if (selectedProvince && regionData[selectedProvince]) {
+            const cities = regionData[selectedProvince];
+            cities.forEach(function(city) {
+              const option = document.createElement("option");
+              option.value = city;
+              option.textContent = city;
+              citySelect.appendChild(option);
+            });
+          } else {
+            const defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "-- 먼저 시/도를 선택하세요 --";
+            citySelect.appendChild(defaultOption);
+          }
+        }
+
+    
+      </script>
+
+      <br>
+      <button class="btn" type="submit" > 지금 날씨와 어울리는 노래는</button>
+    </form>
+
+  
+
+  <script>
+    // 시계 표시
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      const timeStr = `${hours}:${minutes}`;
+      document.getElementById("clock").textContent = timeStr;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
