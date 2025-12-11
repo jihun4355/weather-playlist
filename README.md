@@ -3,7 +3,7 @@
 Samply는 **사용자가 선택한 위치의 실시간 날씨 정보를 기반으로 분위기에 맞는 음악을 자동 추천하는 웹서비스**이다.  
 OpenWeather API로 수집한 날씨 + Selenium 기반 멜론(Melon) 크롤링을 결합하여  
 날씨 분위기별 음악을 3곡씩 자동 추천해준다.  
-(참고: PDF 1~4p  :contentReference[oaicite:2]{index=2})
+(참고: PDF 1~4p)
 
 ---
 
